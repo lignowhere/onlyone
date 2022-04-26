@@ -8,6 +8,8 @@ import logolight2x from '../../assets/images/logo/logo@2x.png';
 import menus from "../../pages/menu";
 import DarkMode from "./DarkMode";
 import icon from '../../assets/images/icon/connect-wallet.svg';
+import Web3 from 'web3/dist/web3.min.js';
+import detectEthereumProvider from '@metamask/detect-provider';
 
 
 const Header = () => {
@@ -50,6 +52,31 @@ const Header = () => {
     ))
     console.log(menuDetail)
 
+    const [web3Api, setWeb3Api] = useState({
+        provider: null,
+        web3: null,
+      })
+    
+      const [account, setAccount] = useState(null)
+    
+      useEffect(() => {
+        const loadProvider = async() => {
+          const provider = await detectEthereumProvider();
+    
+          if (provider) {
+            setWeb3Api({
+              web3: new Web3(provider),
+              provider
+            })
+          } else {
+            console.error("Cai Metamask")
+          }
+        }
+        loadProvider()
+      }, [])
+    
+      
+        
     return <div>
       <TopBar />
       <header id="header_main" className="header_1 js-header" ref={headerRef}>
@@ -95,7 +122,11 @@ const Header = () => {
                                 </ul>
                             </nav>
                             <div className="button-connect-wallet">
-                                <div className="sc-button wallet  style-2">
+                                <div className="sc-button wallet  style-2" 
+                                onClick = {()=>
+                                web3Api.provider.request({ method: "eth_requestAccounts"})
+                                }
+                                >
                                     <img src={icon} alt="icon" />
                                     <span>Kết Nối Ví</span>
                                 </div>
